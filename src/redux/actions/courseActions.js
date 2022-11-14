@@ -2,7 +2,6 @@ import types from './actionTypes';
 import * as courseApi from '../../api/courseApi';
 import { beginApiCall, apiCallError } from './apiStatusActions';
 
-// Thunks
 export const loadCourses = () => (dispatch) => {
   dispatch(beginApiCall());
   return courseApi
@@ -20,14 +19,24 @@ export const loadCourses = () => (dispatch) => {
     });
 };
 
+export const createCourseSuccess = ({ course }) => ({
+  type: types.CREATE_COURSE_SUCCESS,
+  course,
+});
+
+export const updateCourseSuccess = ({ course }) => ({
+  type: types.UPDATE_COURSE_SUCCESS,
+  course,
+});
+
 export const saveCourse = (course) => (dispatch) => {
   dispatch(beginApiCall());
   return courseApi
     .saveCourse(course)
     .then((savedCourse) => {
       course.id
-        ? dispatch({ type: types.UPDATE_COURSE_SUCCESS, course: savedCourse })
-        : dispatch({ type: types.CREATE_COURSE_SUCCESS, course: savedCourse });
+        ? dispatch(updateCourseSuccess({ course: savedCourse }))
+        : dispatch(createCourseSuccess({ course: savedCourse }));
     })
     .catch((err) => {
       dispatch(apiCallError(err));
